@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ICT | ตารางเก็บเงินค่าเสื้อ</title>
+<style>
+:root{--navy:#12325b;--blue:#2563eb;--bg:#f3f6fb;--ink:#172033;--muted:#667085;--line:#dce4ef;--green:#15803d;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#102a50,#2563eb);color:#fff;padding:26px 18px}
+.wrap{max-width:1100px;margin:auto}header h1{margin:0;font-size:clamp(24px,4vw,36px)}header p{margin:7px 0 0;opacity:.9}
+main{max-width:1100px;margin:20px auto;padding:0 14px}.notice{background:#fff7e6;border:1px solid #f2d18b;padding:12px 14px;border-radius:12px;margin-bottom:16px;font-size:14px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px}.card,.panel{background:white;border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 3px 12px #15294b0a}.label{font-size:13px;color:var(--muted)}.value{font-weight:750;font-size:24px;margin-top:4px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tabs button,.btn{border:0;border-radius:9px;padding:10px 14px;background:#e4eaf4;color:#183153;font-weight:650;cursor:pointer}.tabs button.active,.btn.primary{background:var(--blue);color:white}.btn.danger{background:#fee4e2;color:var(--red)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.toolbar input,.toolbar select,.field input,.field select{padding:10px;border:1px solid var(--line);border-radius:8px;font:inherit;min-width:0}
+table{border-collapse:collapse;width:100%;min-width:760px}th,td{padding:11px 10px;text-align:left;border-bottom:1px solid var(--line);font-size:14px}th{background:#f8fafc;color:#475467}.tablebox{overflow:auto}.pill{display:inline-block;border-radius:999px;padding:4px 9px;font-size:12px;font-weight:700}.paid{background:#dcfce7;color:#166534}.partial{background:#fef3c7;color:#92400e}.unpaid{background:#fee2e2;color:#991b1b}
+.adminbox{margin-top:16px}.adminhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.hidden{display:none!important}.field{display:grid;gap:5px;margin:8px 0}.field label{font-size:13px;color:var(--muted)}.formgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.small{font-size:12px;color:var(--muted)}footer{text-align:center;color:var(--muted);padding:24px 10px;font-size:12px}
+@media(max-width:700px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.value{font-size:20px}}
+</style>
+</head>
+<body>
+<header><div class="wrap"><h1>ICT PAYMENT TRACKER</h1><p>ตารางเก็บเงินค่าเสื้อแขนยาว • ปีการศึกษา 2569 • ราคา 500 บาท/คน</p></div></header>
+<main>
+<div class="notice"><b>หมายเหตุเรื่องข้อมูล:</b> เว็บตัวอย่างนี้เก็บข้อมูลในเบราว์เซอร์เครื่องที่ใช้งานเท่านั้น ยังไม่ซิงก์กับเครื่องอื่น และรหัสแอดมินในไฟล์ HTML ไม่ใช่ระบบรักษาความปลอดภัยสำหรับข้อมูลจริง ห้ามใส่ข้อมูลส่วนตัวที่ไม่ควรเปิดเผย</div>
+<section class="stats">
+<div class="card"><div class="label">นักเรียนทั้งหมด</div><div class="value" id="count">0</div></div>
+<div class="card"><div class="label">ยอดที่ควรเก็บ</div><div class="value" id="expected">฿0</div></div>
+<div class="card"><div class="label">เก็บได้แล้ว</div><div class="value" id="collected">฿0</div></div>
+<div class="card"><div class="label">ยอดคงเหลือ</div><div class="value" id="remaining">฿0</div></div>
+</section>
+<div class="tabs" role="tablist"><button class="active" data-grade="ม.4">ม.4</button><button data-grade="ม.5">ม.5</button><button data-grade="ม.6">ม.6</button></div>
+<section class="panel">
+<div class="adminhead"><div><h2 id="gradeTitle" style="margin:0">รายชื่อ ม.4</h2><div class="small">ผู้เข้าชมดูข้อมูลได้ • การแก้ไขต้องเข้าสู่ระบบแอดมิน</div></div><button class="btn" id="loginToggle">เข้าสู่ระบบแอดมิน</button></div>
+<div class="toolbar"><input id="search" placeholder="ค้นหาชื่อหรือห้องเรียน…"><button class="btn" id="exportBtn">ดาวน์โหลด CSV</button></div>
+<div class="tablebox"><table><thead><tr><th>ห้อง</th><th>เลขที่</th><th>ชื่อ-นามสกุล</th><th>ราคา</th><th>ชำระแล้ว</th><th>คงเหลือ</th><th>สถานะ</th><th class="adminOnly hidden">จัดการ</th></tr></thead><tbody id="tbody"></tbody></table></div>
+<div id="empty" class="small" style="padding:18px 0">ยังไม่มีรายชื่อในชั้นนี้</div>
+</section>
+<section id="loginPanel" class="panel adminbox hidden"><h3 style="margin-top:0">เข้าสู่ระบบแอดมิน</h3><div class="field"><label for="password">รหัสผ่านแอดมิน</label><input id="password" type="password" autocomplete="current-password" placeholder="ใส่รหัสผ่าน"></div><button class="btn primary" id="loginBtn">เข้าสู่ระบบ</button> <span id="loginMsg" class="small"></span></section>
+<section id="adminPanel" class="panel adminbox hidden">
+<div class="adminhead"><h3 style="margin:0">จัดการรายชื่อและยอดชำระ</h3><button class="btn danger" id="logoutBtn">ออกจากระบบ</button></div>
+<form id="studentForm"><div class="formgrid">
+<div class="field"><label>ระดับชั้น</label><select id="fGrade"><option>ม.4</option><option>ม.5</option><option>ม.6</option></select></div>
+<div class="field"><label>ห้อง</label><input id="fRoom" placeholder="เช่น 1" required></div>
+<div class="field"><label>เลขที่</label><input id="fNo" placeholder="เลขที่" required></div>
+<div class="field"><label>ชื่อ-นามสกุล</label><input id="fName" placeholder="ชื่อ-นามสกุล" required></div>
+<div class="field"><label>ชำระแล้ว (บาท)</label><input id="fPaid" type="number" min="0" max="500" value="0" required></div>
+<div class="field"><label>วันที่ชำระ</label><input id="fDate" type="date"></div>
+<div class="field"><label>หมายเหตุ</label><input id="fNote" placeholder="ไม่บังคับ"></div>
+<div class="field" style="align-content:end"><button class="btn primary" type="submit" id="saveBtn">เพิ่มรายชื่อ</button> <button class="btn" type="button" id="cancelEdit" hidden>ยกเลิกแก้ไข</button></div>
+</div></form>
+<p class="small">สำหรับข้อมูลจริง ควรใช้ระบบบัญชีผู้ใช้และฐานข้อมูลที่ปลอดภัยก่อนเผยแพร่ให้คนทั่วไป</p>
+</section>
+</main><footer>ICT • ระบบติดตามการชำระค่าเสื้อแขนยาว</footer>
+<script>
+const ADMIN_PASSWORD = "ICT2569";
+const KEY="ict_payment_tracker_demo_v1";
+let data=JSON.parse(localStorage.getItem(KEY)||"[]"),grade="ม.4",isAdmin=false,editId=null;
+const $=id=>document.getElementById(id);
+const money=n=>"฿"+Number(n||0).toLocaleString("th-TH");
+function save(){localStorage.setItem(KEY,JSON.stringify(data));render()}
+function status(paid){return paid>=500?["ชำระครบแล้ว","paid"]:paid>0?["ชำระบางส่วน","partial"]:["ยังไม่ชำระ","unpaid"]}
+function render(){
+ const q=$("search").value.trim().toLowerCase(), filtered=data.filter(x=>x.grade===grade&&[x.room,x.no,x.name].join(" ").toLowerCase().includes(q));
+ $("gradeTitle").textContent="รายชื่อ "+grade;
+ $("tbody").innerHTML=filtered.map(x=>{let s=status(x.paid);return `<tr><td>${esc(x.room)}</td><td>${esc(x.no)}</td><td>${esc(x.name)}</td><td>${money(500)}</td><td>${money(x.paid)}</td><td>${money(Math.max(500-x.paid,0))}</td><td><span class="pill ${s[1]}">${s[0]}</span></td>${isAdmin?`<td><button class="btn" onclick="editRow('${x.id}')">แก้ไข</button> <button class="btn danger" onclick="deleteRow('${x.id}')">ลบ</button></td>`:""}</tr>`}).join("");
+ $("empty").classList.toggle("hidden",filtered.length>0);
+ document.querySelectorAll(".adminOnly").forEach(e=>e.classList.toggle("hidden",!isAdmin));
+ $("count").textContent=data.length;
+ $("expected").textContent=money(data.length*500);
+ $("collected").textContent=money(data.reduce((a,x)=>a+Number(x.paid||0),0));
+ $("remaining").textContent=money(data.reduce((a,x)=>a+Math.max(500-Number(x.paid||0),0),0));
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+document.querySelectorAll("[data-grade]").forEach(b=>b.onclick=()=>{grade=b.dataset.grade;document.querySelectorAll("[data-grade]").forEach(x=>x.classList.toggle("active",x===b));render()});
+$("search").oninput=render;
+$("loginToggle").onclick=()=>$("loginPanel").classList.toggle("hidden");
+$("loginBtn").onclick=()=>{if($("password").value===ADMIN_PASSWORD){isAdmin=true;$("loginMsg").textContent="เข้าสู่ระบบแล้ว";$("loginPanel").classList.add("hidden");$("adminPanel").classList.remove("hidden");$("loginToggle").textContent="โหมดแอดมิน";render()}else $("loginMsg").textContent="รหัสผ่านไม่ถูกต้อง"};
+$("logoutBtn").onclick=()=>{isAdmin=false;editId=null;$("adminPanel").classList.add("hidden");$("loginToggle").textContent="เข้าสู่ระบบแอดมิน";resetForm();render()};
+$("studentForm").onsubmit=e=>{e.preventDefault();if(!isAdmin)return;let obj={id:editId||String(Date.now())+Math.random().toString(16).slice(2),grade:$("fGrade").value,room:$("fRoom").value.trim(),no:$("fNo").value.trim(),name:$("fName").value.trim(),paid:Math.min(500,Math.max(0,Number($("fPaid").value)||0)),date:$("fDate").value,note:$("fNote").value.trim()};if(editId)data=data.map(x=>x.id===editId?obj:x);else data.push(obj);grade=obj.grade;document.querySelectorAll("[data-grade]").forEach(b=>b.classList.toggle("active",b.dataset.grade===grade));resetForm();save()};
+function editRow(id){let x=data.find(y=>y.id===id);if(!x||!isAdmin)return;editId=id;$("fGrade").value=x.grade;$("fRoom").value=x.room;$("fNo").value=x.no;$("fName").value=x.name;$("fPaid").value=x.paid;$("fDate").value=x.date||"";$("fNote").value=x.note||"";$("saveBtn").textContent="บันทึกการแก้ไข";$("cancelEdit").hidden=false;$("adminPanel").scrollIntoView({behavior:"smooth"})}
+function deleteRow(id){if(isAdmin&&confirm("ยืนยันลบรายชื่อนี้?")){data=data.filter(x=>x.id!==id);save()}}
+function resetForm(){editId=null;$("studentForm").reset();$("fPaid").value=0;$("saveBtn").textContent="เพิ่มรายชื่อ";$("cancelEdit").hidden=true}
+$("cancelEdit").onclick=resetForm;
+$("exportBtn").onclick=()=>{let rows=[["ระดับชั้น","ห้อง","เลขที่","ชื่อ-นามสกุล","ราคา","ชำระแล้ว","คงเหลือ","สถานะ","วันที่ชำระ","หมายเหตุ"],...data.filter(x=>x.grade===grade).map(x=>[x.grade,x.room,x.no,x.name,500,x.paid,Math.max(500-x.paid,0),status(x.paid)[0],x.date||"",x.note||""])];let csv="\ufeff"+rows.map(r=>r.map(v=>'"'+String(v??"").replace(/"/g,'""')+'"').join(",")).join("\r\n");let a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));a.download="ICT_"+grade+"_payments.csv";a.click();URL.revokeObjectURL(a.href)};
+render();
+</script></body></html>
